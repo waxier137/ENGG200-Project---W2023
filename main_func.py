@@ -18,7 +18,8 @@ pin_servo = 28
 pin_button = 27
 pin_SDA_LCD = 0
 pin_SCL_LCD = 1
-pin_strip_leds = 22
+pin_strip_leds_1 = 22
+pin_strip_leds_1 = 21
 
 
 '''decks = {'hearts':['Ace','2','3','4','5','6','7','8','9','10','Jack','Queen','King']
@@ -32,7 +33,8 @@ SG90_Servo = Servo(pin = pin_servo)
 sda_lcd = machine.Pin(pin_SDA_LCD)
 scl_lcd = machine.Pin(pin_SCL_LCD)
 #strip_led = Neopixel(30,0,pin_strip_leds,'GRB')
-strip_led = Pin(22, Pin.OUT)
+strip_led_1 = Pin(22, Pin.OUT)
+strip_led_2 = Pin(21, Pin.OUT)
 Button = Pin(pin_button, Pin.PULL_UP, Pin.PULL_DOWN)
 
 i2c_controller = 0
@@ -62,12 +64,28 @@ def get_response_API() -> int:
     return rand_num[0] # Return random number
 
 # Angel from 0-180
-def Servo_Function(angel_of_hearts) -> None:
+def Servo_Function(angel) -> None:
+    SG90_Servo.move(90)
+    time.sleep(2)
+    SG90_Servo.move(145)
+    time.sleep(1)
+    SG90_Servo.move(30)
+    time.sleep(1)
+    SG90_Servo.move(90)
+    time.sleep(1)
+    SG90_Servo.move(60)
+    time.sleep(1.2)
+    SG90_Servo.move(120)
+    time.sleep(0.5)
+    SG90_Servo.move(90)
+    time.sleep(0.5)
+    SG90_Servo.move(45)
+    time.sleep(1)
     SG90_Servo.move(180)
     time.sleep(0.3)
-    SG90_Servo.move(0)
+    SG90_Servo.move(90)
     time.sleep(0.3)
-    SG90_Servo.move(angel_of_hearts)
+    SG90_Servo.move(angel)
     time.sleep(0.3)
     
 # Print on lcd
@@ -80,6 +98,7 @@ def print_on_lcd(string) -> None:
             lcd.putstr(string[i:i+16])
             time.sleep(0.6)
             lcd.move_to(0,0)
+    time.sleep(3)
     lcd.clear()
 
 # Turn led on or off
@@ -114,29 +133,29 @@ def __main__():
         number_card = cards // 4
         type_card = ""
         if cards % 4 == 1:
-            type_card = 'hearts'
+            angel_of_cards = 60 # hearts
         elif cards % 4 == 2:
-            type_card = 'spades'
+            angel_of_cards = 100 # spades
         elif cards % 4 == 3:
-            type_card = 'diamonds'
+            angel_of_cards = 120 # diamonds
         else:
-            type_card = 'clubs'
+            angel_of_cards = 35 # clubs
         angel_of_cards = number_card
         Servo_Function(angel_of_cards)
       #  strip_led([255,160,122],1)
-        string_on = 'The card is ' + cards_name[number_card - 1] + ' ' + chr(cards%4-1)
+        string_on = 'The card is ' + cards_name[number_card - 1] + ' ' + chr(cards%4)
+        strip_led_1.toggle()
+        strip_led_2.toggle()
         print_on_lcd(string_on)
       #  strip_led([255,160,122],0)
-        time.sleep(1)
-        print_on_lcd('Press and hold button to continue')
-        time.sleep(1)
+        strip_led_1.off()
+        strip_led_2.off()
+        print_on_lcd('Hold button to continue')
         print(Button.value())
         if Button.value() == 0:
             print_on_lcd('Thank you for playing')
-            print_on_lcd('Have a good day')
+            print_on_lcd('Have a good day!')
             return 0
         else:
             print_on_lcd('Next card')
 __main__()
-            
-      
