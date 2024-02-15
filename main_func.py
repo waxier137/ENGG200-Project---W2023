@@ -81,12 +81,6 @@ def Servo_Function(angel) -> None:
     time.sleep(0.5)
     SG90_Servo.move(45)
     time.sleep(1)
-    SG90_Servo.move(180)
-    time.sleep(0.3)
-    SG90_Servo.move(90)
-    time.sleep(0.3)
-    SG90_Servo.move(angel)
-    time.sleep(0.3)
     
 # Print on lcd
 def print_on_lcd(string) -> None:
@@ -98,7 +92,7 @@ def print_on_lcd(string) -> None:
             lcd.putstr(string[i:i+16])
             time.sleep(0.6)
             lcd.move_to(0,0)
-    time.sleep(3)
+    time.sleep(5)
     lcd.clear()
 
 # Turn led on or off
@@ -132,22 +126,20 @@ def __main__():
         print(cards)
         number_card = cards // 4
         type_card = ""
-        if cards % 4 == 1:
-            angel_of_cards = 60 # hearts
+        if cards % 4 == 0:
+            angel_of_cards = 45 # hearts
+        elif cards % 4 == 1:
+            angel_of_cards = 75 # spades
         elif cards % 4 == 2:
-            angel_of_cards = 100 # spades
-        elif cards % 4 == 3:
-            angel_of_cards = 120 # diamonds
+            angel_of_cards = 115 # diamonds
         else:
-            angel_of_cards = 35 # clubs
-        angel_of_cards = number_card
+            angel_of_cards = 145 # clubs
         Servo_Function(angel_of_cards)
-      #  strip_led([255,160,122],1)
-        string_on = 'The card is ' + cards_name[number_card - 1] + ' ' + chr(cards%4)
+        SG90_Servo.move(angel_of_cards)
+        string_on = cards_name[cards // 4] + chr(cards%4)
         strip_led_1.toggle()
         strip_led_2.toggle()
         print_on_lcd(string_on)
-      #  strip_led([255,160,122],0)
         strip_led_1.off()
         strip_led_2.off()
         print_on_lcd('Hold button to continue')
@@ -155,7 +147,9 @@ def __main__():
         if Button.value() == 0:
             print_on_lcd('Thank you for playing')
             print_on_lcd('Have a good day!')
-            return 0
+            return
         else:
             print_on_lcd('Next card')
 __main__()
+SG90_move(0)
+lcd.clear()
